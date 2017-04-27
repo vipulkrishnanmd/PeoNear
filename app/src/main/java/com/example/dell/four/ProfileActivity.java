@@ -21,6 +21,9 @@ import java.util.concurrent.ExecutionException;
 
 public class ProfileActivity extends AppCompatActivity{
 
+    private String id;
+    private String myId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,7 @@ public class ProfileActivity extends AppCompatActivity{
 
 
             TextView mEdit = (TextView) findViewById(R.id.id);
+            id = jobj.get("id").toString();
             mEdit.setText("@"+jobj.get("id").toString());
 
             TextView mEdit1 = (TextView) findViewById(R.id.name);
@@ -69,6 +73,15 @@ public class ProfileActivity extends AppCompatActivity{
                     }
                 }
             });
+
+            Button chat= (Button) findViewById(R.id.chat);
+            chat.setOnClickListener(new View.OnClickListener() {
+                                        public void onClick(View v) {
+                                            Intent intent = new Intent(ProfileActivity.this, ChatActivity.class);
+                                            intent.putExtra("data",id);
+                                            startActivity(intent);
+                                        }
+                                    });
 
             System.out.println("data is: " + data);
         } catch (JSONException e) {

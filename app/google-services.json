@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "717877532812",
+    "firebase_url": "https://peonear-43bbb.firebaseio.com",
+    "project_id": "peonear-43bbb",
+    "storage_bucket": "peonear-43bbb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717877532812:android:0a78d7f4a0ed4cdf",
+        "android_client_info": {
+          "package_name": "com.example.dell.four"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "717877532812-j1km81tktmommob70fjh9htque0eq9oc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dell.four",
+            "certificate_hash": "825e59c29cd824edd20da75619553e2fa291584e"
+          }
+        },
+        {
+          "client_id": "717877532812-ok9j16nms3b53lnobp4qd19t9pcdj6f7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASogPFimRbb_7OrlkKbnEX-xqm-6yTgM8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "717877532812-ok9j16nms3b53lnobp4qd19t9pcdj6f7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
