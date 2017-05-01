@@ -55,6 +55,10 @@ import javax.net.ssl.HttpsURLConnection;
 
 import static com.example.dell.four.SaveSharedPreference.clearUserName;
 
+/**
+ * MapsActivity shows a map with the users position and
+ * also shows other users around, who are online
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,GoogleMap.OnMarkerClickListener {
@@ -66,12 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<Marker> markerArray;
     LocationRequest mLocationRequest;
     ArrayList<MarkerOptions> markers=new ArrayList<>();
-    // MarkerOptions m= new MarkerOptions();
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     private GoogleApiClient client;
 
 
@@ -85,12 +84,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 HttpURLConnection client;
-
                 logOut();
-                //callSub1(para);
-
             }
         });
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -117,8 +114,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -173,6 +169,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * Each time the location is changed, this method sends the new
+     * coordinates to server and get the people around. Then shows them on the map
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
 
@@ -180,9 +181,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
-
-
-
+        //Calling the post task
         PostTask post= new PostTask();
         String para= null;
         SaveSharedPreference ssp = new SaveSharedPreference();
@@ -222,17 +221,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 markers.add(m);
             }
 
-            /**
-            LatLng latLngA = new LatLng(11.9566020, 75.5167340);
-            MarkerOptions m1= new MarkerOptions();
-            m1.position(latLngA);
-            m1.title("test");
-            m1.snippet("tes");
-            markers.add(m1);
-            */
 
-
-            //System.out.println("this is great 1 "+ m.getPosition().latitude);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -340,42 +329,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("Maps Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
     }
 
+    /**
+     * This method is called when user clicks on a marker.
+     *  It in turn calls profile activity to show the profile of the
+     *  corresponding user.
+     * @param marker : represents the marker on which user clicks
+     * @return
+     */
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
