@@ -1,6 +1,5 @@
 package com.example.dell.four;
 
-///
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -28,33 +27,16 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.appinvite.AppInvite;
-import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.crash.FirebaseCrash;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-import com.google.firebase.appindexing.Action;
-import com.google.firebase.appindexing.FirebaseAppIndex;
-import com.google.firebase.appindexing.FirebaseUserActions;
-import com.google.firebase.appindexing.Indexable;
-import com.google.firebase.appindexing.builders.Indexables;
-import com.google.firebase.appindexing.builders.PersonBuilder;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -63,47 +45,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-///
 
-
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+/**
+ * Chat activity implements chat activity for the app.
+ * Ref: Firebase sample program
+ */
 
 public class ChatActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -111,7 +57,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
 
-    ///
+    //My ID and the chat partners ID
     private String recId;
     private String myId;
 
@@ -120,6 +66,9 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
 
+    /**
+     * Class implements chat screen views
+     */
     private static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
         ImageView messageImageView;
@@ -135,7 +84,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "ChatActivity";
     public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
     private static final int REQUEST_IMAGE = 2;
@@ -147,7 +96,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
-    private static final String MESSAGE_URL = "http://peonear-43bbb.firebaseio.com/message/";
+    private static final String MESSAGE_URL = "http://peonear-43bbb.firebaseio.com/message/"; //Firebase database
 
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
@@ -170,14 +119,10 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
-            //startActivity(new Intent(this, SignInActivity.class));
-            //finish();
-            //return;
             //mFirebaseAuth.createUserWithEmailAndPassword("vipulkmd@gmail.com", "hellomd"); //have to place in sign up
             mFirebaseAuth.signInWithEmailAndPassword("vipulkmd@gmail.com", "hellomd");
             mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        } //else {
+        }
 
         Bundle extras = getIntent().getExtras();
         recId = extras.getString("data");
@@ -185,7 +130,8 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         SaveSharedPreference ssp = new SaveSharedPreference();
         myId = SaveSharedPreference.getUserName(ChatActivity.this);
 
-        mUsername = myId; //mFirebaseUser.getDisplayName();
+        mUsername = myId;
+        // temporary avtar. TODO: have to change later
         mPhotoUrl = "https://lh3.googleusercontent.com/-Ic5E0mGyeoo/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhqc3_2UnEESjvHHL-rkdpzJh_DXeQ/s96-c/photo.jpg"; //can be udated withour foto
 
 
@@ -285,7 +231,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
         mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mSharedPreferences
-                .getInt(CodelabPreferences.FRIENDLY_MSG_LENGTH, DEFAULT_MSG_LENGTH_LIMIT))});
+                .getInt(ChatPreferences.FRIENDLY_MSG_LENGTH, DEFAULT_MSG_LENGTH_LIMIT))});
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
