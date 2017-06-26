@@ -41,29 +41,23 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-/**
- * Chat activity implements chat activity for the app.
- * Ref: Firebase sample program
- */
-
-public class ChatActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
 
-    //My ID and the chat partners ID
-    private String recId;
-    private String myId;
-
     // Firebase instance variables
     private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
+    private FirebaseRecyclerAdapter<FriendlyMessage, NewsFeedActivity.MessageViewHolder>
             mFirebaseAdapter;
 
     /**
@@ -84,8 +78,9 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    private static final String TAG = "ChatActivity";
-    public static final String MESSAGES_CHILD = "messages";
+
+    private static final String TAG = "NewsFeedActivity";
+    public static final String MESSAGES_CHILD = "news";
     private static final int REQUEST_INVITE = 1;
     private static final int REQUEST_IMAGE = 2;
     private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
@@ -96,7 +91,8 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
-    private static final String MESSAGE_URL = "http://peonear-43bbb.firebaseio.com/message/"; //Firebase database
+    private static final String MESSAGE_URL = "http://peonear-43bbb.firebaseio.com/news/"; //Firebase database
+
 
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
@@ -106,6 +102,10 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     private ImageView mAddMessageImageView;
 
     // Firebase instance variables
+
+    //My ID and the chat partners ID
+    private String recId;
+    private String myId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,10 +125,10 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         Bundle extras = getIntent().getExtras();
-        recId = extras.getString("data"); // Getting receiver id
+        //recId = extras.getString("data"); // Getting receiver id
 
-        SaveSharedPreference ssp = new SaveSharedPreference();
-        myId = SaveSharedPreference.getUserName(ChatActivity.this);
+        final SaveSharedPreference ssp = new SaveSharedPreference();
+        myId = SaveSharedPreference.getUserName(NewsFeedActivity.this);
 
         mUsername = myId;
         // temporary avtar. TODO: have to change later
@@ -155,7 +155,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                 FriendlyMessage.class,
                 R.layout.item_message,
                 MessageViewHolder.class,
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(myId).child(recId)) {
+                mFirebaseDatabaseReference.child("news").child(myId)) {
 
             @Override
             protected void populateViewHolder(final MessageViewHolder viewHolder,
@@ -197,10 +197,10 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 viewHolder.messengerTextView.setText(friendlyMessage.getName());
                 if (friendlyMessage.getPhotoUrl() == null) {
-                    viewHolder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(ChatActivity.this,
+                    viewHolder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(NewsFeedActivity.this,
                             R.drawable.ic_account_circle_black_36dp));
                 } else {
-                    Glide.with(ChatActivity.this)
+                    Glide.with(NewsFeedActivity.this)
                             .load(friendlyMessage.getPhotoUrl())
                             .into(viewHolder.messengerImageView);
                 }
@@ -260,11 +260,29 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                         mUsername,
                         mPhotoUrl,
                         null /* no image */);
-                mFirebaseDatabaseReference.child("messages").child(myId).child(recId) //modify hear
-                        .push().setValue(friendlyMessage);
-                mFirebaseDatabaseReference.child("messages").child(recId).child(myId) //modify hear
-                        .push().setValue(friendlyMessage);
-                mMessageEditText.setText("");
+                String combinedParameters = ssp.getLocationString(NewsFeedActivity.this);
+                String para;
+                PostTask post= new PostTask();
+                try{
+                    String[] a = combinedParameters.split(";");
+                    para = post.execute(a).get();
+                    JSONArray jarray = new JSONArray(para);
+                    int jArrayLength = jarray.length();
+                    for (int i=0;i<jArrayLength;i++){
+                        mFirebaseDatabaseReference.child("news").child(jarray.getJSONObject(i).get("name").toString()) //modify hear
+                                .push().setValue(friendlyMessage);
+                        mMessageEditText.setText("");
+
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
 
             }
 
@@ -321,7 +339,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void putImageInStorage(StorageReference storageReference, Uri uri, final String key) {
-        storageReference.putFile(uri).addOnCompleteListener(ChatActivity.this,
+        storageReference.putFile(uri).addOnCompleteListener(NewsFeedActivity.this,
                 new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {

@@ -24,7 +24,7 @@ class PostTask extends AsyncTask <String, String, String> {
             //Lc=loc[0];
             String lati = loc[0];
             String longi = loc[1];
-            String url = "http://vipulofindia.vacau.com//android.php";
+            String url = "http://longlive.000webhostapp.com/friendsnear/android.php";
             URL obj = new URL(url);
             HttpURLConnection con;
             con = (HttpURLConnection) obj.openConnection();

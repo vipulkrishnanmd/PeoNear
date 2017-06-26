@@ -88,12 +88,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        //newsFeed button
+        final Button buttonNews = (Button) findViewById(R.id.buttonNews);
+        buttonNews.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                HttpURLConnection client;
+                launchNewsFeed();
+            }
+        });
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    private void launchNewsFeed() {
+        Intent intent = new Intent(this, NewsFeedActivity.class);
+        finish();
+        startActivity(intent);
     }
 
     private void logOut() {
@@ -188,6 +203,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String id = SaveSharedPreference.getUserName(MapsActivity.this);
         try {
             String[] a = {String.valueOf(mLastLocation.getLatitude()),String.valueOf(mLastLocation.getLongitude()),id};
+            String combinedParameters = a[0] + ";" + a[1] + ";" + a[2];
+            SaveSharedPreference.setLocationString(MapsActivity.this, combinedParameters);
             para = post.execute(a).get();
         } catch (InterruptedException e) {
             e.printStackTrace();

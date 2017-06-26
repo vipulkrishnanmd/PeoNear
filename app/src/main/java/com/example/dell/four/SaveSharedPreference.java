@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 public class SaveSharedPreference
 {
     static final String PREF_USER_NAME= "username";
+    static final String LOCATION_STRING = "location string";
 
     static SharedPreferences getSharedPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -34,4 +35,17 @@ public class SaveSharedPreference
         editor.clear(); //clear all stored data
         editor.commit();
     }
+
+    public static void setLocationString(Context ctx, String locationString)
+    {
+        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+        editor.putString(LOCATION_STRING, locationString);
+        editor.commit();
+    }
+
+    public static String getLocationString(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString(LOCATION_STRING, "");
+    }
+
 }

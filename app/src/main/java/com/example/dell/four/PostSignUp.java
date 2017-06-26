@@ -24,7 +24,7 @@ class PostSignUp extends AsyncTask <SignupTaskParams, String, String> {
             String email = String.valueOf(para[0].getEmail());
             String password = String.valueOf(para[0].getPassword());
 
-            String url = "http://vipulofindia.vacau.com//androidsignup.php";
+            String url = "http://longlive.000webhostapp.com/friendsnear/androidsignup.php";
             URL obj = new URL(url);
             HttpURLConnection con;
             con = (HttpURLConnection) obj.openConnection();

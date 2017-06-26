@@ -23,7 +23,7 @@ class ProfilePost extends AsyncTask <String, String, String> {
     protected String doInBackground(String... id) {
         try {
 
-            String url = "http://vipulofindia.vacau.com//profile.php";
+            String url = "http://longlive.000webhostapp.com/friendsnear/profile.php";
             URL obj = new URL(url);
             HttpURLConnection con;
             con = (HttpURLConnection) obj.openConnection();
