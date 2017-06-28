@@ -57,7 +57,7 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
 
     // Firebase instance variables
     private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseRecyclerAdapter<FriendlyMessage, NewsFeedActivity.MessageViewHolder>
+    private FirebaseRecyclerAdapter<NewsPost, NewsFeedActivity.MessageViewHolder>
             mFirebaseAdapter;
 
     /**
@@ -110,7 +110,7 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_news_feed);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
@@ -150,23 +150,22 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
 
         // New child entries
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,
-                MessageViewHolder>(
-                FriendlyMessage.class,
-                R.layout.item_message,
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<NewsPost, MessageViewHolder>(
+                NewsPost.class,
+                R.layout.item_newspost,
                 MessageViewHolder.class,
                 mFirebaseDatabaseReference.child("news").child(myId)) {
 
             @Override
             protected void populateViewHolder(final MessageViewHolder viewHolder,
-                                              FriendlyMessage friendlyMessage, int position) {
+                                              NewsPost newsPost, int position) {
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                if (friendlyMessage.getText() != null) {
-                    viewHolder.messageTextView.setText(friendlyMessage.getText());
+                if (newsPost.getText() != null) {
+                    viewHolder.messageTextView.setText(newsPost.getText());
                     viewHolder.messageTextView.setVisibility(TextView.VISIBLE);
                     viewHolder.messageImageView.setVisibility(ImageView.GONE);
                 } else {
-                    String imageUrl = friendlyMessage.getImageUrl();
+                    String imageUrl = newsPost.getImageUrl();
                     if (imageUrl.startsWith("gs://")) {
                         StorageReference storageReference = FirebaseStorage.getInstance()
                                 .getReferenceFromUrl(imageUrl);
@@ -187,7 +186,7 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
                                 });
                     } else {
                         Glide.with(viewHolder.messageImageView.getContext())
-                                .load(friendlyMessage.getImageUrl())
+                                .load(newsPost.getImageUrl())
                                 .into(viewHolder.messageImageView);
                     }
                     viewHolder.messageImageView.setVisibility(ImageView.VISIBLE);
@@ -195,13 +194,13 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
                 }
 
 
-                viewHolder.messengerTextView.setText(friendlyMessage.getName());
-                if (friendlyMessage.getPhotoUrl() == null) {
+                viewHolder.messengerTextView.setText(newsPost.getName());
+                if (newsPost.getPhotoUrl() == null) {
                     viewHolder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(NewsFeedActivity.this,
                             R.drawable.ic_account_circle_black_36dp));
                 } else {
                     Glide.with(NewsFeedActivity.this)
-                            .load(friendlyMessage.getPhotoUrl())
+                            .load(newsPost.getPhotoUrl())
                             .into(viewHolder.messengerImageView);
                 }
 
@@ -212,14 +211,14 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                int friendlyMessageCount = mFirebaseAdapter.getItemCount();
+                int newsPostCount = mFirebaseAdapter.getItemCount();
                 int lastVisiblePosition =
                         mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
                 // If the recycler view is initially being loaded or the
                 // user is at the bottom of the list, scroll to the bottom
                 // of the list to show the newly added message.
                 if (lastVisiblePosition == -1 ||
-                        (positionStart >= (friendlyMessageCount - 1) &&
+                        (positionStart >= (newsPostCount - 1) &&
                                 lastVisiblePosition == (positionStart - 1))) {
                     mMessageRecyclerView.scrollToPosition(positionStart);
                 }
@@ -255,8 +254,8 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FriendlyMessage friendlyMessage = new
-                        FriendlyMessage(mMessageEditText.getText().toString(),
+                NewsPost newsPost = new
+                        NewsPost(mMessageEditText.getText().toString(),
                         mUsername,
                         mPhotoUrl,
                         null /* no image */);
@@ -269,8 +268,8 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
                     JSONArray jarray = new JSONArray(para);
                     int jArrayLength = jarray.length();
                     for (int i=0;i<jArrayLength;i++){
-                        mFirebaseDatabaseReference.child("news").child(jarray.getJSONObject(i).get("name").toString()) //modify hear
-                                .push().setValue(friendlyMessage);
+                        mFirebaseDatabaseReference.child("news").child(jarray.getJSONObject(i).get("id").toString()) //modify hear
+                                .push().setValue(newsPost);
                         mMessageEditText.setText("");
 
                     }
@@ -311,7 +310,7 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
                     final Uri uri = data.getData();
                     Log.d(TAG, "Uri: " + uri.toString());
 
-                    FriendlyMessage tempMessage = new FriendlyMessage(null, mUsername, mPhotoUrl,
+                    NewsPost tempMessage = new NewsPost(null, mUsername, mPhotoUrl,
                             LOADING_IMAGE_URL);
                     mFirebaseDatabaseReference.child(MESSAGES_CHILD).push() //modify hear
                             .setValue(tempMessage, new DatabaseReference.CompletionListener() {
@@ -344,11 +343,11 @@ public class NewsFeedActivity extends AppCompatActivity implements GoogleApiClie
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if (task.isSuccessful()) {
-                            FriendlyMessage friendlyMessage =
-                                    new FriendlyMessage(null, mUsername, mPhotoUrl,
+                            NewsPost newsPost =
+                                    new NewsPost(null, mUsername, mPhotoUrl,
                                             task.getResult().getMetadata().getDownloadUrl().toString());
                             mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(key)
-                                    .setValue(friendlyMessage);
+                                    .setValue(newsPost);
                         } else {
                             Log.w(TAG, "Image upload task was not successful.",
                                     task.getException());

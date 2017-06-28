@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Four</string>
+    <string name="app_name">PeoNear</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_sub1">Sub1Activity</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">PeoNear</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
