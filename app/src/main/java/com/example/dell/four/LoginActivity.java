@@ -55,7 +55,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    //Added by Amal
     private UserLoginTask mAuthTask = null;
 
     // UI references.
